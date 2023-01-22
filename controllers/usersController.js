@@ -2,15 +2,13 @@ const User = require('../models/User');
 const Note = require('../models/Note');
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
-const { findById } = require('../models/User');
-const { json } = require('express');
 
 //@desc Get all users
 //@route GET /users
 //@access Private
 const getAllUsers = asyncHandler(async (req, res) => {
 	const users = await User.find().select('-password').lean();
-	if (!users) {
+	if (!users?.length) {
 		return res.status(400).json({ message: 'Nie znaleziono użytkowników' });
 	}
 	res.json(users);
@@ -63,12 +61,12 @@ const updateUser = asyncHandler(async (req, res) => {
 		!username ||
 		!Array.isArray(roles) ||
 		!roles.length ||
-		typeof active !== boolean
+		typeof active !== 'boolean'
 	) {
 		return res.status(400).json({ message: 'Wszystkie pola są wymagane' });
 	}
 
-	const user = await User.findById({ id }).exec();
+	const user = await User.findById(id).exec();
 
 	if (!user) {
 		return res.status(400).json({ message: 'Nie znaleziono uzytkownika' });
@@ -88,7 +86,7 @@ const updateUser = asyncHandler(async (req, res) => {
 	}
 	const updateUser = await user.save();
 
-	res.json({ message: `${updateUser.username} zaaktualizowany` });
+	res.json({ message: ` Użytkownik ${updateUser.username} zaaktualizowany` });
 });
 
 //@desc Delete a user
@@ -100,14 +98,14 @@ const deleteUser = asyncHandler(async (req, res) => {
 		return res.status(400).json({ message: 'Id użytkownika jest wymagane' });
 	}
 
-	const notes = await Note.findOne({ user: id }).lean().exec();
-	if (notes?.length) {
+	const note = await Note.findOne({ user: id }).lean().exec();
+	if (note) {
 		return res
 			.status(400)
 			.json({ message: 'Użytkownik ma przydzielone notatki' });
 	}
 
-	const user = await User.findById({ id }).exec();
+	const user = await User.findById(id).exec();
 	if (!user) {
 		res.status(400).json({ message: 'Użytkownik nie istnieje' });
 	}
