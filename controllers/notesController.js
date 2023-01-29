@@ -11,15 +11,14 @@ const getAllNotes = asyncHandler(async (req, res) => {
 		return res.status(400).json({ message: 'Nie znaleziono notatek' });
 	}
 
-	// const noteWithUser = await Promise.all(
-	// 	notes.map(async (note) => {
-	// 		const user = await User.findById(note.user).lean().exec();
-	// 		return { ...note, username: user.username };
-	// 	})
-	// );
+	const noteWithUser = await Promise.all(
+		notes.map(async (note) => {
+			const user = await User.findById(note.user).lean().exec();
+			return { ...note, username: user.username };
+		})
+	);
 
-	// res.json(noteWithUser);
-	res.json(notes);
+	res.json(noteWithUser);
 });
 
 //@desc Create new note
