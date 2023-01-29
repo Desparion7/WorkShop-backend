@@ -12,7 +12,7 @@ const login = asyncHandler(async (req, res) => {
 	if (!username || !password) {
 		return res.status(400).json({ message: 'Login i hasło są wymagane' });
 	}
-	const foundUser = await User.find({ username }).exec();
+	const foundUser = await User.findOne({ username }).exec();
 
 	if (!foundUser || !foundUser.active) {
 		return res.status(401).json({ message: 'Brak autoryzacji' });
@@ -31,7 +31,7 @@ const login = asyncHandler(async (req, res) => {
 			},
 		},
 		process.env.ACCESS_TOKEN_SECRET,
-		{ expiresIn: '10s' }
+		{ expiresIn: '10m' }
 	);
 	const refreshToken = jwt.sign(
 		{
@@ -65,7 +65,7 @@ const refresh = asyncHandler(async (req, res) => {
 		refreshToken,
 		process.env.REFRESH_TOKEN_SECRET,
 		asyncHandler(async (err, decoded) => {
-			if (err) return res.status(403).json({ message: 'Zabroniony' });
+			if (err) return res.status(403).json({ message: 'Dostęp zabroniony' });
 
 			const foundUser = await User.find({ username: decoded.username });
 
@@ -80,7 +80,7 @@ const refresh = asyncHandler(async (req, res) => {
 					},
 				},
 				process.env.ACCESS_TOKEN_SECRET,
-				{ expiresIn: '10s' }
+				{ expiresIn: '10m' }
 			);
 
 			res.json({ accessToken });
