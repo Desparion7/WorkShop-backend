@@ -31,14 +31,14 @@ const login = asyncHandler(async (req, res) => {
 			},
 		},
 		process.env.ACCESS_TOKEN_SECRET,
-		{ expiresIn: '10m' }
+		{ expiresIn: '30m' }
 	);
 	const refreshToken = jwt.sign(
 		{
 			username: foundUser.username,
 		},
 		process.env.REFRESH_TOKEN_SECRET,
-		{ expiresIn: '1d' }
+		{ expiresIn: '7d' }
 	);
 	// create scure cookie with refresh token
 	res.cookie('jwt', refreshToken, {
@@ -67,7 +67,7 @@ const refresh = asyncHandler(async (req, res) => {
 		asyncHandler(async (err, decoded) => {
 			if (err) return res.status(403).json({ message: 'Dostęp zabroniony' });
 
-			const foundUser = await User.find({ username: decoded.username });
+			const foundUser = await User.findOne({ username: decoded.username });
 
 			if (!foundUser)
 				return res.status(401).json({ message: 'Brak autoryzacji' });
@@ -80,7 +80,7 @@ const refresh = asyncHandler(async (req, res) => {
 					},
 				},
 				process.env.ACCESS_TOKEN_SECRET,
-				{ expiresIn: '10m' }
+				{ expiresIn: '30m' }
 			);
 
 			res.json({ accessToken });

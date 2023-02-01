@@ -13,7 +13,7 @@ const verifyJWT = (req, res, next) => {
 		if (err) return res.status(403).json({ message: 'Dostęp zabroniony' });
 		req.user = decoded.UserInfo.username;
 		req.roles = decoded.UserInfo.roles;
-        next()
+		next();
 	});
 };
 
