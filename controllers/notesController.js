@@ -32,7 +32,10 @@ const createNewNote = asyncHandler(async (req, res) => {
 		return res.status(400).json({ message: 'Wszystkie pola są wymagane' });
 	}
 	// Check for duplicate
-	const duplicate = await Note.findOne({ title }).lean().exec();
+	const duplicate = await Note.findOne({ title })
+		.collation({ locale: 'pl', strength: 2 })
+		.lean()
+		.exec();
 	if (duplicate) {
 		return res.status(400).json({ message: 'Dany tytuł już istnieje w bazie' });
 	}
@@ -62,7 +65,10 @@ const updateNote = asyncHandler(async (req, res) => {
 		return res.status(400).json({ message: 'Nota o podanym ID nie istnieje' });
 	}
 	// Check for duplicate title
-	const duplicate = await Note.findOne({ title }).lean().exec();
+	const duplicate = await Note.findOne({ title })
+		.collation({ locale: 'pl', strength: 2 })
+		.lean()
+		.exec();
 
 	if (duplicate && duplicate?._id.toString() !== id) {
 		return res

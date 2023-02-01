@@ -24,7 +24,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 		return res.status(400).json({ message: 'Wszystkie pola są wymagane' });
 	}
 	// Check for duplicate
-	const duplicate = await User.findOne({ username }).lean().exec();
+	const duplicate = await User.findOne({ username }).collation({locale:'pl', strength:2}).lean().exec();
 	if (duplicate) {
 		return res
 			.status(409)
@@ -72,7 +72,7 @@ const updateUser = asyncHandler(async (req, res) => {
 		return res.status(400).json({ message: 'Nie znaleziono uzytkownika' });
 	}
 	// Check for duplicate
-	const duplicate = await User.findOne({ username }).lean().exec();
+	const duplicate = await User.findOne({ username }).collation({locale:'pl', strength:2}).lean().exec();
 	// Allow updates to the original user
 	if (duplicate && duplicate?._id.toString() !== id) {
 		return res.status(409).json({ message: 'Duplikat użytkownika' });
